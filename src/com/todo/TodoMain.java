@@ -15,7 +15,7 @@ public class TodoMain {
 		boolean isList = false;
 		boolean quit = false;
 		do {
-			Menu.displaymenu();
+			Menu.prompt();
 			isList = false;
 			String choice = sc.next();
 			switch (choice) {
@@ -37,11 +37,13 @@ public class TodoMain {
 				break;
 
 			case "ls_name_asc":
+				System.out.println("제목 순으로 정렬하였습니다.");
 				l.sortByName();
 				isList = true;
 				break;
 
 			case "ls_name_desc":
+				System.out.println("제목 역순으로 정렬하였습니다.");
 				l.sortByName();
 				l.reverseList();
 				isList = true;
@@ -55,9 +57,13 @@ public class TodoMain {
 			case "exit":
 				quit = true;
 				break;
+				
+			case "help":
+				Menu.displaymenu();
+				break;
 
 			default:
-				System.out.println("please enter one of the above mentioned command");
+				System.out.println("정확한 명령을 입력해주세요! (도움말 - help)\n");
 				break;
 			}
 			

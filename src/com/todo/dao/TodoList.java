@@ -36,11 +36,11 @@ public class TodoList {
 	}
 
 	public void listAll() {
-		System.out.println("\n"
-				+ "inside list_All method\n");
+		System.out.println("[전체 목록]");
 		for (TodoItem myitem : list) {
-			System.out.println(myitem.getTitle() + myitem.getDesc());
+			System.out.println("[ " + myitem.getTitle() + " ] " + myitem.getDesc() + " - " + myitem.getCurrent_date());
 		}
+		System.out.println("");
 	}
 	
 	public void reverseList() {
@@ -48,6 +48,7 @@ public class TodoList {
 	}
 
 	public void sortByDate() {
+		System.out.println("날짜 순으로 정렬하였습니다.");
 		Collections.sort(list, new TodoSortByDate());
 	}
 
