@@ -1,5 +1,11 @@
 package com.todo.service;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 import com.todo.dao.TodoItem;
@@ -88,9 +94,56 @@ public class TodoUtil {
 	}
 
 	public static void listAll(TodoList l) {
+		System.out.println("[전체 목록]");
 		for (TodoItem item : l.getList()) {
 			System.out.println("[ " + item.getTitle() + " ] " + item.getDesc() + " - " + item.getCurrent_date());
 		}
 		System.out.println("");
+	}
+	
+	// 여기서부터 step2 추가
+	public static void saveList(TodoList l, String filename) {
+		Writer w;
+		try {
+			w = new FileWriter(filename);
+			
+			for(TodoItem item : l.getList()) {
+				w.write(item.toSaveString());
+			}
+			w.close();
+			System.out.println("모든 데이터가 저장되었습니다.\n");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void loadList(TodoList l, String filename) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			
+			int count = 0;
+			String temp_line;
+			while((temp_line = br.readLine()) != null) {
+				count ++;
+				
+				StringTokenizer st = new StringTokenizer(temp_line, "##");
+				String name = st.nextToken();
+				String desc = st.nextToken();
+				String date = st.nextToken();
+				
+				TodoItem item = new TodoItem(name, desc, date);
+				l.addItem(item);
+			}
+			
+			br.close();
+			System.out.println(count + "개의 항목을 읽었습니다.");
+			
+		} catch (FileNotFoundException e) {
+			System.out.println(filename + " 파일이 없습니다.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

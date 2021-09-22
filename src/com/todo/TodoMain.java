@@ -14,6 +14,9 @@ public class TodoMain {
 		TodoList l = new TodoList();
 		boolean isList = false;
 		boolean quit = false;
+		TodoUtil.loadList(l, "todolist.txt");
+		Menu.displaymenu();
+		
 		do {
 			Menu.prompt();
 			isList = false;
@@ -56,6 +59,7 @@ public class TodoMain {
 
 			case "exit":
 				quit = true;
+				TodoUtil.saveList(l, "todolist.txt");
 				break;
 				
 			case "help":
