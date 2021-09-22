@@ -68,7 +68,7 @@ public class TodoMain {
 
 			default:
 				System.out.println("정확한 명령을 입력해주세요! (도움말 - help)\n");
-				break;
+				break;3
 			}
 			
 			if(isList) l.listAll();

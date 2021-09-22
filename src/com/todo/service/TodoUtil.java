@@ -24,7 +24,7 @@ public class TodoUtil {
 		
 		title = sc.next();
 		if (list.isDuplicate(title)) {
-			System.out.printf("중복된 이름이 있습니다!");
+			System.out.printf("중복된 이름이 있습니다!\n");
 			return;
 		}
 		
@@ -74,7 +74,7 @@ public class TodoUtil {
 		System.out.print("새로운 항목 이름 >");
 		String new_title = sc.next().trim();
 		if (l.isDuplicate(new_title)) {
-			System.out.println("중복된 이름이 있습니다!");
+			System.out.println("중복된 이름이 있습니다!\n");
 			return;
 		}
 		
