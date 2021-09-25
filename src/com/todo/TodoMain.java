@@ -1,6 +1,7 @@
 package com.todo;
 
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 import com.todo.dao.TodoList;
 import com.todo.menu.Menu;
@@ -20,7 +21,18 @@ public class TodoMain {
 		do {
 			Menu.prompt();
 			isList = false;
-			String choice = sc.next();
+			//sc.nextLine();
+			String choice = sc.nextLine();
+			
+			String keyword = "";
+			if(choice.indexOf("find") > -1) {
+				StringTokenizer st = new StringTokenizer(choice, " ");
+				choice = st.nextToken();
+				keyword = st.nextToken();
+			} 
+			
+			//System.out.println("choice는 "+ choice + " keyword는 " + keyword);
+			
 			switch (choice) {
 
 			case "add":
@@ -37,6 +49,10 @@ public class TodoMain {
 				
 			case "ls":
 				TodoUtil.listAll(l);
+				break;
+				
+			case "ls_cate":
+				l.listCategory();
 				break;
 
 			case "ls_name_asc":
@@ -56,6 +72,20 @@ public class TodoMain {
 				l.sortByDate();
 				isList = true;
 				break;
+				
+			case "ls_date_desc":
+				l.sortByDate();
+				l.reverseList();
+				isList = true;
+				break;
+				
+			case "find":
+				l.findKeyword(keyword);
+				break;
+				
+			case "find_cate":
+				l.findCategory(keyword);
+				break;
 
 			case "exit":
 				quit = true;
@@ -68,7 +98,7 @@ public class TodoMain {
 
 			default:
 				System.out.println("정확한 명령을 입력해주세요! (도움말 - help)\n");
-				break;3
+				break;
 			}
 			
 			if(isList) l.listAll();
