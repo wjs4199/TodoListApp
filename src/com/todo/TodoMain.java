@@ -10,9 +10,10 @@ import com.todo.service.TodoUtil;
 public class TodoMain {
 	
 	public static void start() {
-	
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
+		//초기 데이터 이전됨
+		l.importData("todolist.txt");
 		boolean isList = false;
 		boolean quit = false;
 		TodoUtil.loadList(l, "todolist.txt");
