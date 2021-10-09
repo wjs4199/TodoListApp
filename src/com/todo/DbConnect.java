@@ -7,6 +7,12 @@ import java.sql.SQLException;
 
 public class DbConnect {
 	private static Connection conn = null;
+	//private static DbConnect instance = new DbConnect();
+	//private DbConnect() {}
+	
+	//public static DbConnect getInstance() {
+	//	return instance;
+	//}
 	
 	public static void closeConnection() {
 		if(conn != null) {

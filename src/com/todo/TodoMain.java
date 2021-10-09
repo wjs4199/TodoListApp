@@ -1,5 +1,7 @@
 package com.todo;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -10,30 +12,24 @@ import com.todo.service.TodoUtil;
 public class TodoMain {
 	
 	public static void start() {
+		Connection con = null;
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
+		
+		//db와 연결
+		con = DbConnect.getConnection();
+		
 		//초기 데이터 이전됨
 		l.importData("todolist.txt");
+		
 		boolean isList = false;
 		boolean quit = false;
-		TodoUtil.loadList(l, "todolist.txt");
 		Menu.displaymenu();
 		
 		do {
 			Menu.prompt();
-			isList = false;
-			//sc.nextLine();
-			String choice = sc.nextLine();
-			
-			String keyword = "";
-			if(choice.indexOf("find") > -1) {
-				StringTokenizer st = new StringTokenizer(choice, " ");
-				choice = st.nextToken();
-				keyword = st.nextToken();
-			} 
-			
-			//System.out.println("choice는 "+ choice + " keyword는 " + keyword);
-			
+			String choice = sc.next();
+		
 			switch (choice) {
 
 			case "add":
@@ -53,44 +49,52 @@ public class TodoMain {
 				break;
 				
 			case "ls_cate":
-				l.listCategory();
+				TodoUtil.listCateAll(l);
 				break;
 
-			case "ls_name_asc":
+			case "ls_name":
 				System.out.println("제목 순으로 정렬하였습니다.");
-				l.sortByName();
-				isList = true;
+				TodoUtil.listAll(l, "title", 1);
 				break;
 
 			case "ls_name_desc":
 				System.out.println("제목 역순으로 정렬하였습니다.");
-				l.sortByName();
-				l.reverseList();
-				isList = true;
+				TodoUtil.listAll(l, "title", 0);
 				break;
 				
 			case "ls_date":
-				l.sortByDate();
-				isList = true;
+				System.out.println("날짜 순으로 정렬하였습니다.");
+				TodoUtil.listAll(l, "due_date", 1);
 				break;
 				
 			case "ls_date_desc":
-				l.sortByDate();
-				l.reverseList();
-				isList = true;
+				System.out.println("날짜 역순으로 정렬하였습니다.");
+				TodoUtil.listAll(l, "due_date", 0);
+				break;
+				
+			case "ls_comp":
+				System.out.println("완료된 항목만 출력합니다.");
+				TodoUtil.listAll(l,"ls_completed", 0);
 				break;
 				
 			case "find":
-				l.findKeyword(keyword);
+				String keyword = sc.nextLine().trim();
+				TodoUtil.findList(l, keyword);
 				break;
 				
 			case "find_cate":
-				l.findCategory(keyword);
+				String cate = sc.nextLine().trim();
+				TodoUtil.findCateList(l, cate);
+				break;
+				
+			case "comp":
+				int number = sc.nextInt();
+				sc.nextLine();
+				TodoUtil.completeItem(l,number);
 				break;
 
 			case "exit":
 				quit = true;
-				TodoUtil.saveList(l, "todolist.txt");
 				break;
 				
 			case "help":
