@@ -29,6 +29,8 @@ public class TodoItem {
         this.title=title;
         this.desc=desc;
         this.category = category;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        this.current_date= format.format(new Date());
         this.due_date = due_date;
         this.budget = budget;
         this.importance = importance;
@@ -110,11 +112,11 @@ public class TodoItem {
 	//***************************** toString() 관련 *****************************//
 
 	public String toString() {
-		return id + " ["+category+"] " + title + " - " + desc + " - " + due_date + " - " + current_date;
+		return id + " ["+category+"] " + title + " - " + desc + " - " + due_date + " - " + current_date + " - " + budget + "원 - " + importance;
 	}
 	
 	public String toStringCompleted() {
-		return id + " ["+category+"] " + title + "[V] - " + desc + " - " + due_date + " - " + current_date;
+		return id + " ["+category+"] " + title + "[V] - " + desc + " - " + due_date + " - " + current_date + " - " + budget + "원 - " + importance;
 	}
 }
 
