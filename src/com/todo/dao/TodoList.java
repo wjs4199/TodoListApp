@@ -10,8 +10,7 @@ import java.sql.Statement;
 import java.util.*;
 
 import com.todo.DbConnect;
-import com.todo.service.TodoSortByDate;
-import com.todo.service.TodoSortByName;
+
 
 import java.util.Collections;
 
@@ -25,10 +24,12 @@ public class TodoList {
 		this.conn = DbConnect.getConnection();
 	}
 
+	 //************************* add / update / delete *************************//
+	
 	//데이터 추가하는 함수
 	public int addItem(TodoItem t) {
-		String sql = "insert into list (title, memo, category, current_date, due_date)" 
-				+ " values (?,?,?,?,?);";
+		String sql = "insert into list (title, memo, category, current_date, due_date, budget, importance)" 
+				+ " values (?,?,?,?,?,?,?);";
 		PreparedStatement pstmt;
 		int count = 0;
 		try {
@@ -38,6 +39,8 @@ public class TodoList {
 			pstmt.setString(3, t.getCategory());
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getDue_date());
+			pstmt.setInt(6, t.getBudget());
+			pstmt.setInt(7, t.getImportance());
 			count = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -63,7 +66,7 @@ public class TodoList {
 
 	//정보를 수정하여 업데이트 하는 함수
 	public int updateItem(TodoItem t) {
-		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?"
+		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?, budget=?, importance=?"
 				+ " where id = ?;";
 		PreparedStatement pstmt;
 		int count =0;
@@ -74,7 +77,9 @@ public class TodoList {
 			pstmt.setString(3, t.getCategory());
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getDue_date());
-			pstmt.setInt(6, t.getId());
+			pstmt.setInt(6, t.getBudget());
+			pstmt.setInt(7, t.getImportance());
+			pstmt.setInt(8, t.getId());
 			count = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -83,6 +88,9 @@ public class TodoList {
 		return count;
 	}
 
+	
+	//***************** list 가져오기/ 변수따라 오름or내림 차순으로 정렬 *****************//
+	
 	//리스트를 가져다 주는 함수
 	public ArrayList<TodoItem> getList() {
 		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
@@ -98,7 +106,9 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
+				int budget = rs.getInt("budget");
+				int importance = rs.getInt("importance");
+				TodoItem t = new TodoItem(title, description, category, due_date, budget, importance );
 				t.setId(id);
 				t.setCurrent_date(current_date);
 				list.add(t);
@@ -110,75 +120,105 @@ public class TodoList {
 		return list;
 	}
 	
-	//저장된 db의 데이타 갯수를 가져오는 함수
-	public int getCount() {
-		Statement stmt;
-		int count = 0;
-		try {
-			stmt = conn.createStatement();
-			String sql = "SELECT count(id) FROM list;";
-			ResultSet rs = stmt.executeQuery(sql);
-			rs.next();
-			count = rs.getInt("count(id)");
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return count;
+	///정령하기 원하는 내용을 파라미터로 받아 query에서 가져오는 함수
+	public ArrayList<TodoItem> getListOrdered(String orderby, int ordering){
+			ArrayList<TodoItem> list =  new ArrayList<TodoItem>();
+			Statement stmt;
+			try {
+				stmt = conn.createStatement();
+				String sql = "SELECT * FROM list ORDER BY " + orderby;
+				if(ordering == 0) 
+					sql += " desc";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()) {
+					int id = rs.getInt("id");
+					String category = rs.getString("category");
+					String title = rs.getString("title");
+					String description = rs.getString("memo");
+					String due_date = rs.getString("due_date");
+					String current_date = rs.getString("current_date");
+					int budget = rs.getInt("budget");
+					int importance = rs.getInt("importance");
+					TodoItem t = new TodoItem(title, description, category, due_date, budget, importance);
+					t.setId(id);
+					t.setCurrent_date(current_date);
+					list.add(t);
+				}
+				stmt.close();
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+			return list;
 	}
-	
-	public void listAll() {
-		System.out.println("[전체 목록]");
-		int count =0;
-		for (TodoItem item : list) {
-			System.out.println(((count+1) + ". [ " + item.getCategory() + " ] " + item.getTitle() + " - " + item.getDesc() + " - " + item.getDue_date() + " - " + item.getCurrent_date()));
-			count++;
-		}
-		System.out.println("");
-	}
-
-	public int indexOf(TodoItem t) {
-		return list.indexOf(t);
-	}
-	
-	public Boolean isDuplicate(String title) {
-		for (TodoItem item : list) {
-			if (title.equals(item.getTitle())) return true;
-		}
-		return false;
-	}
+		
+	//******************************* find 정렬 *******************************//	
 	
 	/// keyword를 포함하고 있는 title과 memo를 찾아서 그 항목 내보내기
-	public ArrayList<TodoItem> getList (String keyword) {
-		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
-		PreparedStatement pstmt;
-		keyword = "%" + keyword + "%";
-		try {
-			String sql = "SELECT * FROM list WHERE title like ? or memo like ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, keyword);
-			pstmt.setString(2, keyword);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				int id = rs.getInt("id");
-				String category = rs.getString("category");
-				String title = rs.getString("title");
-				String description = rs.getString("memo");
-				String due_date = rs.getString("due_date");
-				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
-				t.setId(id);
-				t.setCurrent_date(current_date);
-				list.add(t);
+	public ArrayList<TodoItem> getListKeyword (String keyword) {
+			ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+			PreparedStatement pstmt;
+			keyword = "%" + keyword + "%";
+			try {
+				String sql = "SELECT * FROM list WHERE title like ? or memo like ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, keyword);
+				pstmt.setString(2, keyword);
+				ResultSet rs = pstmt.executeQuery();
+				while(rs.next()) {
+					int id = rs.getInt("id");
+					String category = rs.getString("category");
+					String title = rs.getString("title");
+					String description = rs.getString("memo");
+					String due_date = rs.getString("due_date");
+					String current_date = rs.getString("current_date");
+					int budget = rs.getInt("budget");
+					int importance = rs.getInt("importance");
+					TodoItem t = new TodoItem(title, description, category, due_date, budget, importance);
+					t.setId(id);
+					t.setCurrent_date(current_date);
+					list.add(t);
+				}
+				pstmt.close();
+			} catch(SQLException e) {
+				e.printStackTrace();
 			}
-			pstmt.close();
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
+			return list;
 	}
 	
-	///db에서 카테고리만 불러와 이것의 string리스트를 내보내는 함
+	///db에서 카테고리가 keyword인것만 불러와 보여줌
+	public ArrayList<TodoItem> getListCategory(String keyword) {
+			ArrayList<TodoItem> list =new ArrayList<TodoItem>();
+			PreparedStatement pstmt;
+			try {
+				String sql = "SELECT * FROM list WHERE category = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1,keyword);
+				ResultSet rs = pstmt.executeQuery();
+				while(rs.next()) {
+					int id = rs.getInt("id");
+					String category = rs.getString("category");
+					String title = rs.getString("title");
+					String description = rs.getString("memo");
+					String due_date = rs.getString("due_date");
+					String current_date = rs.getString("current_date");
+					int budget = rs.getInt("budget");
+					int importance = rs.getInt("importance");
+					TodoItem t = new TodoItem(title, description, category, due_date, budget, importance);
+					t.setId(id);
+					t.setCurrent_date(current_date);
+					list.add(t);
+				}
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return list;
+	}
+	
+	//******************************* 특정내용만 정렬 *******************************//	
+	
+	///db에서 카테고리만 
 	public ArrayList<String> getCategories() {
 		ArrayList<String> list = new ArrayList<String>();
 		Statement stmt;
@@ -197,65 +237,8 @@ public class TodoList {
 		return list;
 	}
 
-	///db에서 카테고리가 keyword인것만 불러와 보여줌
-	public ArrayList<TodoItem> getListCategory(String keyword) {
-		ArrayList<TodoItem> list =new ArrayList<TodoItem>();
-		PreparedStatement pstmt;
-		try {
-			String sql = "SELECT * FROM list WHERE category = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1,keyword);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				int id = rs.getInt("id");
-				String category = rs.getString("category");
-				String title = rs.getString("title");
-				String description = rs.getString("memo");
-				String due_date = rs.getString("due_date");
-				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
-				t.setId(id);
-				t.setCurrent_date(current_date);
-				list.add(t);
-			}
-			pstmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return list;
-	}
-	
-	///정령하기 원하는 내용을 파라미터로 받아 query에서 가져오는 함수
-	public ArrayList<TodoItem> getOrderedList(String orderby, int ordering){
-		ArrayList<TodoItem> list =  new ArrayList<TodoItem>();
-		Statement stmt;
-		try {
-			stmt = conn.createStatement();
-			String sql = "SELECT * FROM list ORDER BY " + orderby;
-			if(ordering == 0) 
-				sql += " desc";
-			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()) {
-				int id = rs.getInt("id");
-				String category = rs.getString("category");
-				String title = rs.getString("title");
-				String description = rs.getString("memo");
-				String due_date = rs.getString("due_date");
-				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
-				t.setId(id);
-				t.setCurrent_date(current_date);
-				list.add(t);
-			}
-			stmt.close();
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
 
-	// 완료된 항목만 리스트로 출력하는 함수	
+	// 완료된 항목만 리스트로 
 	public ArrayList<TodoItem> getCompletedList() {
 		ArrayList<TodoItem> list =  new ArrayList<TodoItem>();
 		Statement stmt;
@@ -270,7 +253,9 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
+				int budget = rs.getInt("budget");
+				int importance = rs.getInt("importance");
+				TodoItem t = new TodoItem(title, description, category, due_date, budget, importance);
 				t.setId(id);
 				t.setCurrent_date(current_date);
 				list.add(t);
@@ -280,6 +265,43 @@ public class TodoList {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	
+	//*********************************** 기타 ***********************************//	
+	
+	public void listAll() {
+		System.out.println("[전체 목록]");
+		int count =0;
+		for (TodoItem item : list) {
+			System.out.println(((count+1) + ". [ " + item.getCategory() + " ] " + item.getTitle() + " - " + item.getDesc() + " - " + item.getDue_date() + " - " + item.getCurrent_date() + " - " + item.getBudget() + "원 - " + item.getImportance()));
+			count++;
+		}
+		System.out.println("");
+	}
+
+	//저장된 db의 데이타 갯수를 가져오는 함수
+	public int getCount() {
+			Statement stmt;
+			int count = 0;
+			try {
+				stmt = conn.createStatement();
+				String sql = "SELECT count(id) FROM list;";
+				ResultSet rs = stmt.executeQuery(sql);
+				rs.next();
+				count = rs.getInt("count(id)");
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return count;
+	}
+		
+	public Boolean isDuplicate(String title) {
+		for (TodoItem item : list) {
+			if (title.equals(item.getTitle())) return true;
+		}
+		return false;
 	}
 	
 	///완료시키는 함수

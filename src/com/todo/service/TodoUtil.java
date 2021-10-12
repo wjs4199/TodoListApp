@@ -13,10 +13,14 @@ import com.todo.dao.TodoItem;
 import com.todo.dao.TodoList;
 
 public class TodoUtil {
+	
+	//*************************** 추가/ 삭제/ 업데이트 ***************************//
+	
 	// 데이터 추가
 	public static void createItem(TodoList list) {
 		
 		String title, desc, category, due_date;
+		int budget, importance;
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.print("\n" + "[항목추가]\n"+"카테고리 > ");
@@ -36,7 +40,13 @@ public class TodoUtil {
 		System.out.print("마감일자(yyyy/mm/dd) > ");
 		due_date = sc.next();
 		
-		TodoItem t = new TodoItem(title, desc, category, due_date);
+		System.out.print("예산 > ");
+		budget = sc.nextInt();
+		
+		System.out.print("중요도 (1~5) > ");
+		importance = sc.nextInt();
+		
+		TodoItem t = new TodoItem(title, desc, category, due_date, budget, importance);
 		if(list.addItem(t)>0) {
 			System.out.println("추가되었습니다.");
 		}
@@ -90,12 +100,21 @@ public class TodoUtil {
 		System.out.print("새 마감일자 > ");
 		String new_due_date = sc.nextLine().trim();
 		
-		TodoItem t = new TodoItem(new_title, new_desc, new_category, new_due_date);
+		System.out.print("새 예산 > ");
+		int new_budget = sc.nextInt();
+		
+		System.out.print("새 중요도 (1~5) > ");
+		int new_importance = sc.nextInt();
+		
+		TodoItem t = new TodoItem(new_title, new_desc, new_category, new_due_date, new_budget, new_importance);
 		t.setId(num);
 		if(l.updateItem(t) > 0) 
 			System.out.println("수정되었습니다.\n");
 	}
 
+	
+	///*************************** 리스트 출력 ***************************//
+	
 	// 전체목록을 출력하는 함수
 	public static void listAll(TodoList l) {
 		System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
@@ -117,7 +136,7 @@ public class TodoUtil {
 		} 
 		else {
 			System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
-			for (TodoItem item : l.getOrderedList(orderby, ordering)) {
+			for (TodoItem item : l.getListOrdered(orderby, ordering)) {
 				System.out.println(item.toString());
 			}
 			System.out.println("");
@@ -137,7 +156,7 @@ public class TodoUtil {
 	/// keyword 찾기
 	public static void findList(TodoList l, String keyword) {
 			int count =0;
-			for (TodoItem item : l.getList(keyword)) {
+			for (TodoItem item : l.getListKeyword(keyword)) {
 				System.out.println(item.toString());
 				count++;
 			}
@@ -153,6 +172,8 @@ public class TodoUtil {
 			}
 			System.out.println();
 		}
+	
+	///******************************* 기타 *******************************//
 	
 	// 항목 완료시키기
 	public static void completeItem(TodoList l, int number) {

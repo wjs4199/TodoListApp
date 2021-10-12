@@ -12,35 +12,29 @@ public class TodoItem {
     private String category;
     private String due_date;
     private int is_completed = 0;
+    private int budget = 0;
+    private int importance = 5;
+    
+  //***************************** 생성자 *****************************//
 
-    public int getIs_completed() {
-		return is_completed;
-	}
-
-	public void setIs_completed(int is_completed) {
-		this.is_completed = is_completed;
-	}
-
+    //list에서 가져올때
 	public TodoItem(String title, String desc, String category, String due_date){
         this.title=title;
         this.desc=desc;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        this.current_date= format.format(new Date());
         this.category = category;
         this.due_date = due_date;
     }
 	
-	public TodoItem(String title, String desc, String category, String due_date, int is_completed){
+	public TodoItem(String title, String desc, String category, String due_date, int budget, int importance){
         this.title=title;
         this.desc=desc;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        this.current_date= format.format(new Date());
         this.category = category;
         this.due_date = due_date;
-        this.is_completed = is_completed;
+        this.budget = budget;
+        this.importance = importance;
     }
-    
-  
+	//***************************** getter / setter *****************************//
+	
     public String getCategory() {
 		return category;
 	}
@@ -57,7 +51,6 @@ public class TodoItem {
 		this.due_date = due_date;
 	}
 
-	
     public String getTitle() {
         return title;
     }
@@ -89,6 +82,32 @@ public class TodoItem {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public int getIs_completed() {
+		return is_completed;
+	}
+
+	public void setIs_completed(int is_completed) {
+		this.is_completed = is_completed;
+	}
+
+	public int getBudget() {
+		return budget;
+	}
+
+	public void setBudget(int budget) {
+		this.budget = budget;
+	}
+
+	public int getImportance() {
+		return importance;
+	}
+
+	public void setImportance(int importance) {
+		this.importance = importance;
+	}
+	
+	//***************************** toString() 관련 *****************************//
 
 	public String toString() {
 		return id + " ["+category+"] " + title + " - " + desc + " - " + due_date + " - " + current_date;

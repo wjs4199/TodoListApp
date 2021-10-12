@@ -72,6 +72,11 @@ public class TodoMain {
 				TodoUtil.listAll(l, "due_date", 0);
 				break;
 				
+			case "ls_importance":
+				System.out.println("중요도 순으로 정렬하였습니다.");
+				TodoUtil.listAll(l, "importance", 1);
+				break;
+				
 			case "ls_comp":
 				System.out.println("완료된 항목만 출력합니다.");
 				TodoUtil.listAll(l,"ls_completed", 0);
