@@ -58,18 +58,27 @@ public class TodoUtil {
 	public static void deleteItem(TodoList l) {
 		
 		Scanner sc = new Scanner(System.in);
-		
+		ArrayList<Integer> deleteNumList = new ArrayList<Integer>();
 		
 		System.out.print("\n"
 				+ "[항목 삭제]\n"
-				+ "삭제할 항목 번호 > ");
-		int num = sc.nextInt();
+				+ "* 입력을 완료하시려면 0을 입력하세요. *\n");
 		
-		if(l.deleteItem(num)>0) {
-			System.out.println("삭제되었습니다.");
+		while(true) {
+			System.out.print("삭제할 항목 번호 > ");
+			int num = sc.nextInt();
+			if(num != 0) 
+				deleteNumList.add(num);
+			else
+				break;
 		}
-		
-		System.out.println("");
+				
+		for(int i=0; i<deleteNumList.size(); i++) {
+			if(l.deleteItem(deleteNumList.get(i))>0) {
+				System.out.printf("%d번 ", deleteNumList.get(i));
+			}
+		}
+		System.out.println("항목이 삭제되었습니다.\n");
 	}
 
 	// 업데이트 - 새 내용 입력
@@ -176,10 +185,20 @@ public class TodoUtil {
 	///******************************* 기타 *******************************//
 	
 	// 항목 완료시키기
-	public static void completeItem(TodoList l, int number) {
-		if(l.completeItem(number) > 0) {
-			System.out.println("선택한 항목을 완료 표시했습니다.\n");
+	public static void completeItem(TodoList l, String numbers) {
+		ArrayList<Integer> compNumList= new ArrayList<Integer>();
+		
+		StringTokenizer stk = new StringTokenizer(numbers);
+		while(stk.hasMoreTokens()) {
+			compNumList.add(Integer.parseInt(stk.nextToken()));
 		}
+		
+		for(int i=0; i<compNumList.size(); i++) {
+			if(l.completeItem(compNumList.get(i)) > 0) {
+				System.out.printf("%d번 ",compNumList.get(i));
+			}
+		}
+		System.out.println("선택한 항목을 완료 표시했습니다.\n");
 	}
 	
 }

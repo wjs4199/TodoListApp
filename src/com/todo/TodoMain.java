@@ -93,9 +93,8 @@ public class TodoMain {
 				break;
 				
 			case "comp":
-				int number = sc.nextInt();
-				sc.nextLine();
-				TodoUtil.completeItem(l,number);
+				String numbers = sc.nextLine();
+				TodoUtil.completeItem(l,numbers);
 				break;
 
 			case "exit":
