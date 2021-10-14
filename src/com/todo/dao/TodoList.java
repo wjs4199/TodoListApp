@@ -63,12 +63,20 @@ public class TodoList {
 
 	public int deleteItem(int index) {
 		String sql = "delete from list where id=?;";
+		String sqlCategory = "delete from category where id=?;";
+		
 		PreparedStatement pstmt;
 		int count =0;
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, index);
 			count = pstmt.executeUpdate();
+			
+			//카테고리 테이블 해당데이터 삭제
+			pstmt = conn.prepareStatement(sqlCategory);
+			pstmt.setInt(1, index);
+			pstmt.executeUpdate();
+			
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -80,6 +88,9 @@ public class TodoList {
 	public int updateItem(TodoItem t) {
 		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?, budget=?, importance=?"
 				+ " where id = ?;";
+		String sqlCategory = "update category set cate=?"
+				+ " where id = ?;";
+		
 		PreparedStatement pstmt;
 		int count =0;
 		try {
@@ -93,6 +104,13 @@ public class TodoList {
 			pstmt.setInt(7, t.getImportance());
 			pstmt.setInt(8, t.getId());
 			count = pstmt.executeUpdate();
+			
+			//카테고리 테이블 업데이트
+			pstmt = conn.prepareStatement(sqlCategory);
+			pstmt.setString(1, t.getCategory());
+			pstmt.setInt(2, t.getId());
+			pstmt.executeUpdate();
+			
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
