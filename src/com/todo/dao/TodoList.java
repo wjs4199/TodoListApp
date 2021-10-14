@@ -363,8 +363,8 @@ public class TodoList {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
-			String sql = "insert into list (title, memo, current_date, due_date)"
-					+ " values (?,?,?,?);";
+			String sql = "insert into list (title, memo, current_date, due_date, budget, importance)"
+					+ " values (?,?,?,?,?,?);";
 			//String sqlLastID = "select id from list WHERE title like ?;";
 			String sqlCategory = "insert into category (cate)" 
 					+ " values (?);";
@@ -379,12 +379,16 @@ public class TodoList {
 				String category = st.nextToken();
 				String current_date = st.nextToken();
 				String due_date = st.nextToken();
+				String budget = st.nextToken();
+				String importance = st.nextToken();
 				
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, title);
 				pstmt.setString(2, description);
 				pstmt.setString(3, current_date);
 				pstmt.setString(4, due_date);
+				pstmt.setInt(5, Integer.parseInt(budget));
+				pstmt.setInt(6, Integer.parseInt(importance));
 				int count = pstmt.executeUpdate();
 				if(count > 0) records++;
 				
