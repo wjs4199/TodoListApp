@@ -29,30 +29,28 @@ public class TodoList {
 	
 	//데이터 추가하는 함수
 	public int addItem(TodoItem t) {
-		String sql = "insert into list (title, memo, category, current_date, due_date, budget, importance)" 
-				+ " values (?,?,?,?,?,?,?);";
+		String sql = "insert into list (title, memo, current_date, due_date, budget, importance)" 
+				+ " values (?,?,?,?,?,?);";
 		String sqlCategory = "insert into category (cate)" 
 				+ " values (?);";
 		
 		PreparedStatement pstmt;
 		int count = 0;
-		int countCate = 0;
+		
 		try { 
 			//list 테이블에 넣기
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
-			pstmt.setString(3, t.getCategory());
-			pstmt.setString(4, t.getCurrent_date());
-			pstmt.setString(5, t.getDue_date());
-			pstmt.setInt(6, t.getBudget());
-			pstmt.setInt(7, t.getImportance());
+			pstmt.setString(3, t.getCurrent_date());
+			pstmt.setString(4, t.getDue_date());
+			pstmt.setInt(5, t.getBudget());
+			pstmt.setInt(6, t.getImportance());
 			count = pstmt.executeUpdate();
 			
-			//category 테이블에 넣기(중복 안되는 것만)
 			pstmt = conn.prepareStatement(sqlCategory);
 			pstmt.setString(1, t.getCategory());
-			countCate = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			
 			pstmt.close();
 		} catch (SQLException e) {
@@ -86,7 +84,7 @@ public class TodoList {
 
 	//정보를 수정하여 업데이트 하는 함수
 	public int updateItem(TodoItem t) {
-		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?, budget=?, importance=?"
+		String sql = "update list set title=?, memo=?, current_date=?, due_date=?, budget=?, importance=?"
 				+ " where id = ?;";
 		String sqlCategory = "update category set cate=?"
 				+ " where id = ?;";
@@ -97,12 +95,11 @@ public class TodoList {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
-			pstmt.setString(3, t.getCategory());
-			pstmt.setString(4, t.getCurrent_date());
-			pstmt.setString(5, t.getDue_date());
-			pstmt.setInt(6, t.getBudget());
-			pstmt.setInt(7, t.getImportance());
-			pstmt.setInt(8, t.getId());
+			pstmt.setString(3, t.getCurrent_date());
+			pstmt.setString(4, t.getDue_date());
+			pstmt.setInt(5, t.getBudget());
+			pstmt.setInt(6, t.getImportance());
+			pstmt.setInt(7, t.getId());
 			count = pstmt.executeUpdate();
 			
 			//카테고리 테이블 업데이트
@@ -356,8 +353,8 @@ public class TodoList {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
-			String sql = "insert into list (title, memo, category, current_date, due_date)"
-					+ " values (?,?,?,?,?);";
+			String sql = "insert into list (title, memo, current_date, due_date)"
+					+ " values (?,?,?,?);";
 			//String sqlLastID = "select id from list WHERE title like ?;";
 			String sqlCategory = "insert into category (cate)" 
 					+ " values (?);";
@@ -376,9 +373,8 @@ public class TodoList {
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, title);
 				pstmt.setString(2, description);
-				pstmt.setString(3, category);
-				pstmt.setString(4, current_date);
-				pstmt.setString(5, due_date);
+				pstmt.setString(3, current_date);
+				pstmt.setString(4, due_date);
 				int count = pstmt.executeUpdate();
 				if(count > 0) records++;
 				

@@ -8,8 +8,8 @@ public class TodoItem {
 	private int id;
     private String title;
     private String desc;
-    private String current_date;
     private String category;
+    private String current_date;
     private String due_date;
     private int is_completed = 0;
     private int budget = 0;
