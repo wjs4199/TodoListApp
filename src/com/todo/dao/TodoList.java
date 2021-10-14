@@ -124,11 +124,13 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "SELECT * FROM list";
+			String sql = "SELECT * FROM list INNER JOIN category on " 
+					+ "list.id = category.id;";
+					//"SELECT * FROM list";
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				int id = rs.getInt("id");
-				String category = rs.getString("category");
+				String category = rs.getString("cate");
 				String title = rs.getString("title");
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
@@ -153,13 +155,15 @@ public class TodoList {
 			Statement stmt;
 			try {
 				stmt = conn.createStatement();
-				String sql = "SELECT * FROM list ORDER BY " + orderby;
+				String sql = "SELECT * FROM list INNER JOIN category on " 
+						+ "list.id = category.id "
+						+ "ORDER BY " + orderby;
 				if(ordering == 0) 
 					sql += " desc";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()) {
 					int id = rs.getInt("id");
-					String category = rs.getString("category");
+					String category = rs.getString("cate");
 					String title = rs.getString("title");
 					String description = rs.getString("memo");
 					String due_date = rs.getString("due_date");
@@ -186,14 +190,16 @@ public class TodoList {
 			PreparedStatement pstmt;
 			keyword = "%" + keyword + "%";
 			try {
-				String sql = "SELECT * FROM list WHERE title like ? or memo like ?";
+				String sql = "SELECT * FROM list INNER JOIN category on "
+						+ "list.id = category.id " 
+						+ "WHERE title like ? or memo like ?";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, keyword);
 				pstmt.setString(2, keyword);
 				ResultSet rs = pstmt.executeQuery();
 				while(rs.next()) {
 					int id = rs.getInt("id");
-					String category = rs.getString("category");
+					String category = rs.getString("cate");
 					String title = rs.getString("title");
 					String description = rs.getString("memo");
 					String due_date = rs.getString("due_date");
@@ -217,13 +223,15 @@ public class TodoList {
 			ArrayList<TodoItem> list =new ArrayList<TodoItem>();
 			PreparedStatement pstmt;
 			try {
-				String sql = "SELECT * FROM list WHERE category = ?";
+				String sql = "SELECT * FROM list INNER JOIN category on "
+						+ "list.id = category.id " 
+						+ "WHERE cate = ?";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1,keyword);
 				ResultSet rs = pstmt.executeQuery();
 				while(rs.next()) {
 					int id = rs.getInt("id");
-					String category = rs.getString("category");
+					String category = rs.getString("cate");
 					String title = rs.getString("title");
 					String description = rs.getString("memo");
 					String due_date = rs.getString("due_date");
@@ -251,10 +259,10 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "SELECT DISTINCT category FROM list";
+			String sql = "SELECT DISTINCT cate FROM category";
 			ResultSet rs =stmt.executeQuery(sql);
 			while(rs.next()) {
-				String category = rs.getString("category");
+				String category = rs.getString("cate");
 				list.add(category);
 			}
 			stmt.close();
@@ -271,11 +279,13 @@ public class TodoList {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			String sql = "SELECT * FROM list WHERE is_completed like 1";
+			String sql = "SELECT * FROM list INNER JOIN category on "
+					+ "list.id = category.id " 
+					+ "WHERE is_completed like 1";
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				int id = rs.getInt("id");
-				String category = rs.getString("category");
+				String category = rs.getString("cate");
 				String title = rs.getString("title");
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
