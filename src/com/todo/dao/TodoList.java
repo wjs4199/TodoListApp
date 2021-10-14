@@ -31,9 +31,14 @@ public class TodoList {
 	public int addItem(TodoItem t) {
 		String sql = "insert into list (title, memo, category, current_date, due_date, budget, importance)" 
 				+ " values (?,?,?,?,?,?,?);";
+		String sqlCategory = "insert into category (cate)" 
+				+ " values (?);";
+		
 		PreparedStatement pstmt;
 		int count = 0;
-		try {
+		int countCate = 0;
+		try { 
+			//list 테이블에 넣기
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, t.getTitle());
 			pstmt.setString(2, t.getDesc());
@@ -43,6 +48,12 @@ public class TodoList {
 			pstmt.setInt(6, t.getBudget());
 			pstmt.setInt(7, t.getImportance());
 			count = pstmt.executeUpdate();
+			
+			//category 테이블에 넣기(중복 안되는 것만)
+			pstmt = conn.prepareStatement(sqlCategory);
+			pstmt.setString(1, t.getCategory());
+			countCate = pstmt.executeUpdate();
+			
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -329,7 +340,13 @@ public class TodoList {
 			String line;
 			String sql = "insert into list (title, memo, category, current_date, due_date)"
 					+ " values (?,?,?,?,?);";
+			//String sqlLastID = "select id from list WHERE title like ?;";
+			String sqlCategory = "insert into category (cate)" 
+					+ " values (?);";
+			
 			int records = 0;
+			int countCate = 0;
+			
 			while((line = br.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer(line, "##");
 				String title = st.nextToken();
@@ -346,6 +363,13 @@ public class TodoList {
 				pstmt.setString(5, due_date);
 				int count = pstmt.executeUpdate();
 				if(count > 0) records++;
+				
+				
+				//category 테이블에 넣기(중복 안되는 것만)
+				pstmt = conn.prepareStatement(sqlCategory);
+				pstmt.setString(1, category);
+				countCate = pstmt.executeUpdate();
+				
 				pstmt.close();
 			}
 			System.out.println(records + " records read!!");
